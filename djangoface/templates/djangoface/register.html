@@ -1,0 +1,32 @@
+{% extends "djangoface/layout.html" %}
+
+{% block body %}
+
+    <h2>Register</h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input class="form-control my-3" autofocus type="text" name="username" placeholder="Username">
+        </div>
+        <div class="form-group">
+            <input class="form-control my-3" type="email" name="email" placeholder="Email Address">
+        </div>
+        <div class="form-group">
+            <input class="form-control my-3" type="password" name="password" placeholder="Password">
+        </div>
+        <div class="form-group">
+            <input class="form-control my-3" type="password" name="confirmation" placeholder="Confirm Password">
+        </div>
+        <input class="btn btn-primary w-100" type="submit" value="Register">
+    </form>
+
+    <span class="text-light">
+        Already have an account? <a href="{% url 'login' %}" class="text-light font-weight-bold">Log In here.</a>
+    </span>
+
+{% endblock %}
