@@ -2,16 +2,17 @@
 <div class="container px-4 py-3">
     <h1 class="text-center">Upload Image</h1>
 
-    <form action="/" method="post" id="image-form">
+    <form method="post" id="image-form" enctype='multipart/form-data'>
         {% csrf_token %}
         <div class="mb-3">
             <label for="formFile" class="form-label fw-bold">Select an image to identify faces from</label>
-            <input class="form-control" type="file" name="target-image">
+            <input class="form-control" type="file" name="image" id="image">
+            <button class="btn btn-primary mt-2" id="identify-button" type="submit">
+                Next <i class='fa-solid fa-arrow-right'></i>
+            </button>
         </div>
-        
     </form>
-    <button type="submit" class="btn btn-primary" form="image-form">
-        Next <i class='fa-solid fa-arrow-right'></i>
-    </button>
+
+    <div id="image-container"></div>
 </div>
 {% endblock %}

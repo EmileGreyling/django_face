@@ -1,0 +1,20 @@
+{% extends "djangoface/layout.html" %} {% block body %}
+<div class="m-3">
+    <label for="formFile" class="form-label fw-bold">Upload new face:</label>
+    <input class="form-control" type="file" name="target-image" id="new-face" />
+</div>
+
+<div class="d-md-flex">
+    {% for face in faces %}
+    <div class="card m-3">
+        <img src="{{ face.face.url }}" class="card-img-top" alt="..." />
+        <div class="card-body">
+            <h5 class="card-title">{{ face.name }}</h5>
+            <a href="" class="btn btn-success">Edit</a>
+            <a href="" class="btn btn-danger">Delete</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

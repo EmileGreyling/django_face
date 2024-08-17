@@ -3,10 +3,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.index),
+    path("", views.index, name="index"),
+    path("faces/", views.faces, name="faces"),
 
     # Authentication routes
-    path("login", views.login_view, name="login"),
-    path("logout", views.logout_view, name="logout"),
-    path("register", views.register, name="register"),
+    path("accounts/login/", views.login_view, name="login"),
+    path("accounts/logout/", views.logout_view, name="logout"),
+    path("accounts/register/", views.register, name="register"),
 ]

@@ -4,14 +4,98 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import reverse, render
 
-from .models import User
+from PIL import Image, ImageDraw, ImageFont
+import face_recognition
+import base64
+import json
+from io import BytesIO
 
 
-def index(request): 
+from .models import Face, User
+
+
+@login_required
+def index(request):
     if request.method == "POST":
-        print(request.POST["target-image"])
-    
+        known_faces = Face.objects.filter(user=request.user)
+        known_face_encodings = []
+        known_face_names = []
+
+        for face in known_faces:
+            image_of_known_person = face_recognition.load_image_file(
+                f"media/{face.face}"
+            )
+            known_person_encoding = face_recognition.face_encodings(
+                image_of_known_person
+            )[0]
+
+            known_face_encodings.append(known_person_encoding)
+            known_face_names.append(face.name)
+
+        image = face_recognition.load_image_file(request.FILES["image"])
+
+        # Find faces in test image
+        face_locations = face_recognition.face_locations(image)
+        face_encodings = face_recognition.face_encodings(image, face_locations)
+
+        # Convert to PIL format
+        pil_image = Image.fromarray(image)
+
+        # Create a ImageDraw instance
+        draw = ImageDraw.Draw(pil_image)
+
+        # Loop through faces in image
+        for (top, right, bottom, left), face_encoding in zip(
+            face_locations, face_encodings
+        ):
+            matches = face_recognition.compare_faces(
+                known_face_encodings, face_encoding
+            )
+
+            name = "Unkown Person"
+
+            # If match
+            if True in matches:
+                first_match_index = matches.index(True)
+                name = known_face_names[first_match_index]
+
+            # Draw box around face
+            draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 0))
+
+            # Draw label
+            font = ImageFont.load_default()
+            ascent, descent = font.getmetrics()
+            text_width = font.getmask(name).getbbox()[2]
+            text_height = font.getmask(name).getbbox()[3] + descent
+
+            draw.rectangle(
+                ((left, bottom - text_height - 10), (right, bottom)),
+                fill=(0, 0, 0),
+                outline=(0, 0, 0),
+            )
+            draw.text(
+                (left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255)
+            )
+        del draw
+
+        # Convert PIL image to bytes
+        buffered = BytesIO()
+        pil_image.save(buffered, format="JPEG")
+        img_bytes = buffered.getvalue()
+
+        # Encode image bytes to base64
+        img_base64 = base64.b64encode(img_bytes).decode('utf-8')
+
+        # Return image as base64 encoded string
+        return HttpResponse(json.dumps({'image': img_base64}), content_type="application/json")
+
     return render(request, "djangoface/index.html")
+
+
+@login_required
+def faces(request):
+    faces = Face.objects.filter(user=request.user)
+    return render(request, "djangoface/faces.html", {"faces": faces})
 
 
 def login_view(request):
@@ -51,7 +135,9 @@ def register(request):
         confirmation = request.POST["confirmation"]
         if password != confirmation:
             return render(
-                request, "djangoface/register.html", {"message": "Passwords must match."}
+                request,
+                "djangoface/register.html",
+                {"message": "Passwords must match."},
             )
 
         # Attempt to create new user
@@ -60,7 +146,9 @@ def register(request):
             user.save()
         except IntegrityError:
             return render(
-                request, "djangoface/register.html", {"message": "Username already taken."}
+                request,
+                "djangoface/register.html",
+                {"message": "Username already taken."},
             )
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
