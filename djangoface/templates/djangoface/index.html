@@ -1,18 +1,35 @@
-{% extends "djangoface/layout.html" %} {% block body %}
-<div class="container px-4 py-3">
-    <h1 class="text-center">Upload Image</h1>
+{% extends "djangoface/layout.html" %} 
 
-    <form method="post" id="image-form" enctype='multipart/form-data'>
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="formFile" class="form-label fw-bold">Select an image to identify faces from</label>
-            <input class="form-control" type="file" name="image" id="image">
-            <button class="btn btn-primary mt-2" id="identify-button" type="submit">
-                Next <i class='fa-solid fa-arrow-right'></i>
-            </button>
+{% block body %}
+    <div class="container px-4 py-3">
+        <h1 class="text-center">Upload Image</h1>
+
+        <form method="post" id="image-form" enctype='multipart/form-data'>
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="formFile" class="form-label fw-bold">Select an image to identify faces from</label>
+                <input class="form-control" type="file" name="image" id="image">
+                <button class="btn btn-primary mt-2" id="identify-btn" type="submit">
+                    Identify Faces <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+        </form>
+
+        <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="label">Results</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div id="image-container"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <a type="button" class="btn btn-primary" id="download-btn">Download</a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </form>
-
-    <div id="image-container"></div>
-</div>
+    </div>
 {% endblock %}
