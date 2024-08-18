@@ -4,11 +4,7 @@
         object-fit: cover;
     }
 
-    #identify-btn {
-        width: 100%;
-    }
-
-    #download-btn {
+    #identify-btn, .card {
         width: 100%;
     }
 }
@@ -17,12 +13,8 @@
 @media (min-width: 768px) {
     .card-img-top {
         min-width: 14rem;
-        height: 20vw;
+        height: 17vw;
         object-fit: cover;
-    }
-
-    #new-face {
-        width: 40% !important;
     }
 }
 

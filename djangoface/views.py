@@ -10,7 +10,6 @@ import base64
 import json
 from io import BytesIO
 
-
 from .models import Face, User
 
 
@@ -94,8 +93,27 @@ def index(request):
 
 @login_required
 def faces(request):
-    faces = Face.objects.filter(user=request.user)
+    if request.method == "POST":
+        name = request.POST["name"]
+        image = request.FILES["image"]
+
+        Face.objects.create(user=request.user, name=name, face=image)
+
+        # Create new face
+        print(name)
+
+    faces = Face.objects.filter(user=request.user).order_by("name")
     return render(request, "djangoface/faces.html", {"faces": faces})
+
+
+@login_required
+def delete_face(request, id):
+    face = Face.objects.filter(pk=id).first()
+
+    if request.user == face.user:
+        face.delete()
+
+    return HttpResponseRedirect(reverse("faces"))
 
 
 def login_view(request):
