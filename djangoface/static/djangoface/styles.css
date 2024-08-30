@@ -4,7 +4,7 @@
         object-fit: cover;
     }
 
-    #identify-btn, .card {
+    #identify-btn, #upload-person-btn, .card {
         width: 100%;
     }
 }
@@ -12,7 +12,7 @@
 
 @media (min-width: 768px) {
     .card-img-top {
-        min-width: 14rem;
+        width: 14rem;
         height: 17vw;
         object-fit: cover;
     }
@@ -34,6 +34,8 @@
     height: 120px;
     animation: spin 2s linear infinite;
 }
+
+
 
 @keyframes spin {
     0% {

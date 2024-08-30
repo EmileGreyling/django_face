@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import reverse, render
 
 from PIL import Image, ImageDraw, ImageFont
@@ -51,7 +51,7 @@ def index(request):
                 known_face_encodings, face_encoding
             )
 
-            name = "Unkown Person"
+            name = "Unknown Person"
 
             # If match
             if True in matches:
@@ -59,7 +59,7 @@ def index(request):
                 name = known_face_names[first_match_index]
 
             # Draw box around face
-            draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 0))
+            draw.rectangle(((left, top), (right, bottom)), outline=(13, 110, 253))
 
             # Draw label
             font = ImageFont.load_default()
@@ -69,8 +69,8 @@ def index(request):
 
             draw.rectangle(
                 ((left, bottom - text_height - 10), (right, bottom)),
-                fill=(0, 0, 0),
-                outline=(0, 0, 0),
+                fill=(13, 110, 253),
+                outline=(13, 110, 253),
             )
             draw.text(
                 (left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255)
@@ -93,6 +93,8 @@ def index(request):
 
 @login_required
 def faces(request):
+    query = request.GET.get('q')
+
     if request.method == "POST":
         name = request.POST["name"]
         image = request.FILES["image"]
@@ -102,7 +104,11 @@ def faces(request):
         # Create new face
         print(name)
 
-    faces = Face.objects.filter(user=request.user).order_by("name")
+    if query:
+        faces = Face.objects.filter(user=request.user, name__icontains=query).order_by("name")
+    else:
+        faces = Face.objects.filter(user=request.user).order_by("name")
+
     return render(request, "djangoface/faces.html", {"faces": faces})
 
 
