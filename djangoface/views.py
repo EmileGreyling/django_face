@@ -1,14 +1,14 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.db import IntegrityError
-from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import reverse, render
-
-from PIL import Image, ImageDraw, ImageFont
-import face_recognition
 import base64
 import json
 from io import BytesIO
+
+import face_recognition
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, reverse
+from PIL import Image, ImageDraw, ImageFont
 
 from .models import Face, User
 
@@ -59,7 +59,7 @@ def index(request):
                 name = known_face_names[first_match_index]
 
             # Draw box around face
-            draw.rectangle(((left, top), (right, bottom)), outline=(13, 110, 253))
+            draw.rectangle(((left, top), (right, bottom)), outline=(255, 0, 0))
 
             # Draw label
             font = ImageFont.load_default()
@@ -67,14 +67,8 @@ def index(request):
             text_width = font.getmask(name).getbbox()[2]
             text_height = font.getmask(name).getbbox()[3] + descent
 
-            draw.rectangle(
-                ((left, bottom - text_height - 10), (right, bottom)),
-                fill=(13, 110, 253),
-                outline=(13, 110, 253),
-            )
-            draw.text(
-                (left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255)
-            )
+            # # Draw the text inside the box
+            draw.text((left, bottom - text_height), name, fill=(255, 0, 0, 255))
         del draw
 
         # Convert PIL image to bytes
@@ -83,17 +77,19 @@ def index(request):
         img_bytes = buffered.getvalue()
 
         # Encode image bytes to base64
-        img_base64 = base64.b64encode(img_bytes).decode('utf-8')
+        img_base64 = base64.b64encode(img_bytes).decode("utf-8")
 
         # Return image as base64 encoded string
-        return HttpResponse(json.dumps({'image': img_base64}), content_type="application/json")
+        return HttpResponse(
+            json.dumps({"image": img_base64}), content_type="application/json"
+        )
 
     return render(request, "djangoface/index.html")
 
 
 @login_required
 def faces(request):
-    query = request.GET.get('q')
+    query = request.GET.get("q")
 
     if request.method == "POST":
         name = request.POST["name"]
@@ -105,7 +101,9 @@ def faces(request):
         print(name)
 
     if query:
-        faces = Face.objects.filter(user=request.user, name__icontains=query).order_by("name")
+        faces = Face.objects.filter(user=request.user, name__icontains=query).order_by(
+            "name"
+        )
     else:
         faces = Face.objects.filter(user=request.user).order_by("name")
 
