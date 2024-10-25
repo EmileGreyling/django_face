@@ -5,6 +5,8 @@
 ### 📄 Overview
 This project is a face recognition web application built using Django and JavaScript with jQuery. The app allows users to upload images of faces and create a database of faces connected to their account. The app can then identify the faces in the uploaded images that are present in the database.
 
+Link to YouTube video showing how the project works: https://youtu.be/mLy7rvJNfYU
+
 ### 🔍 Distinctiveness and Complexity
 This project stands out for several reasons. First, it integrates face recognition technology into a web application that leverages Django's powerful backend framework and JavaScript for frontend interactions. The combination of these technologies creates a dynamic, full-stack project that is far more complex than the simpler CRUD-based projects often seen in web development.
 
