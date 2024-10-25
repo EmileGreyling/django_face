@@ -1,11 +1,13 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class User(AbstractUser):
     pass
 
+
 class Face(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="uploader")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="faces")
     name = models.CharField(max_length=747)
     face = models.ImageField(upload_to="faces")
 

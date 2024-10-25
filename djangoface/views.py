@@ -1,13 +1,16 @@
 import base64
 import json
+import os
 from io import BytesIO
 
 import face_recognition
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, reverse
+from django.templatetags.static import static
 from PIL import Image, ImageDraw, ImageFont
 
 from .models import Face, User
@@ -62,13 +65,18 @@ def index(request):
             draw.rectangle(((left, top), (right, bottom)), outline=(255, 0, 0))
 
             # Draw label
-            font = ImageFont.load_default()
+            font_path = os.path.join(settings.BASE_DIR, 'djangoface', 'static', 'djangoface', 'Oswald-Regular.ttf')
+            print(font_path)
+            
+            font = ImageFont.truetype(font_path, 20)
+
+            # Change font size of font 
             ascent, descent = font.getmetrics()
             text_width = font.getmask(name).getbbox()[2]
             text_height = font.getmask(name).getbbox()[3] + descent
 
             # # Draw the text inside the box
-            draw.text((left, bottom - text_height), name, fill=(255, 0, 0, 255))
+            draw.text((left, bottom - text_height), name, font=font, fill=(255, 0, 0, 255))
         del draw
 
         # Convert PIL image to bytes
